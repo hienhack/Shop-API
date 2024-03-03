@@ -3,6 +3,7 @@ package com.example.tutorial.controller;
 import com.example.tutorial.dto.Product.ProductDTO;
 import com.example.tutorial.dto.Product.ProductInListDTO;
 import com.example.tutorial.dto.Response.ResponseDTO;
+import com.example.tutorial.entity.Category;
 import com.example.tutorial.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,14 @@ public class ProductController {
     public ResponseDTO<Page<ProductInListDTO>> getAll(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "page_size", defaultValue = "20") Integer pageSize,
-            @RequestParam(name = "sort", defaultValue = "") String sortQuery
+            @RequestParam(name = "sort", defaultValue = "") String sortQuery,
+            @RequestParam(name = "category", defaultValue = "") String categoryName
             ) {
         Pageable pageRequest = sortQuery.isBlank() ? PageRequest.of(page, pageSize)
                 : PageRequest.of(page, pageSize, getFinalSort(sortQuery));
 
-        return ResponseDTO.of(productService.getAll(pageRequest));
+        return ResponseDTO.of(categoryName.isBlank() ? productService.getAll(pageRequest)
+                : productService.getAllByCategoryName(categoryName, pageRequest));
     }
 
     @GetMapping(value = "/find")

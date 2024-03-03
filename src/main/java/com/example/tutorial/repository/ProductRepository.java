@@ -14,7 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     public Page<Product> findAll(Pageable pageInfo);
     public Page<Product> findProductByNameContainingIgnoreCase(String name, Pageable pageInfo);
 
-    public Page<Product> findProductByCategoriesIsIn(List<Category> categories, Pageable pageable);
+    public Page<Product> findProductByCategoriesContains(Category categories, Pageable pageable);
 
     @Query(value = "SELECT p.name FROM product p WHERE p.name LIKE %:keyword% LIMIT :maxResults", nativeQuery = true)
     public List<String> findRelatedProductByKeywords(@Param("keyword") String keyword, Integer maxResults);

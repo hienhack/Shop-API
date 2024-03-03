@@ -11,6 +11,7 @@ import com.example.tutorial.util.ListHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,8 +33,11 @@ public class ProductService {
         return product.map(ProductDTO::new).orElse(null);
     }
 
-    public Page<ProductInListDTO> getAllByCategory(List<Category> categories, Pageable pageInfo) {
-        return productRepository.findProductByCategoriesIsIn(categories, pageInfo).map(ProductInListDTO::new);
+    public Page<ProductInListDTO> getAllByCategoryName(String categoryName, Pageable pageRequest) {
+        Category category = categoryRepository.findCategoryByName(categoryName)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND.value(),
+                        "Can not found category with name = " + categoryName));
+        return productRepository.findProductByCategoriesContains(category, pageRequest).map(ProductInListDTO::new);
     }
 
     public Page<ProductInListDTO> findByKeyword(String keyword, Pageable pageInfo) {

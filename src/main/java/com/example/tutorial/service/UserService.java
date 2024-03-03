@@ -4,8 +4,8 @@ import com.example.tutorial.dto.User.UserCreationDTO;
 import com.example.tutorial.dto.User.UserDTO;
 import com.example.tutorial.entity.Address;
 import com.example.tutorial.entity.User;
-import com.example.tutorial.exception.LogicException;
-import com.example.tutorial.exception.ResourceNotFountException;
+import com.example.tutorial.exception.BusinessException;
+import com.example.tutorial.exception.BusinessException;
 import com.example.tutorial.repository.AddressRepository;
 import com.example.tutorial.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +49,9 @@ public class UserService implements UserDetailsService {
 
         // Checking existing email, phone
         if (userRepository.existsByEmail(userCreationDTO.getEmail())) {
-            throw new LogicException("Email used, try another one");
+            throw new BusinessException("Email existed, try another one");
         } else if (userRepository.existsByPhone(userCreationDTO.getPhone())) {
-            throw new LogicException("Phone used, try another one");
+            throw new BusinessException("Phone existed, try another one");
         }
 
         User user = new User();
@@ -63,8 +63,6 @@ public class UserService implements UserDetailsService {
         user.getRoles().addAll(userCreationDTO.getRoles());
         user.getRoles().forEach(userRole -> userRole.setUser(user));
 
-
-
         return new UserDTO(userRepository.save(user));
     }
 
@@ -75,14 +73,14 @@ public class UserService implements UserDetailsService {
 
     public void removeAddress(User customer, Integer addressId) {
         if (!addressRepository.existsByIdAndCustomerId(addressId, customer.getId()))
-            throw new ResourceNotFountException("Not found address with id = " + addressId + "in user's addresses");
+            throw new BusinessException("Not found address with id = " + addressId + "in user's addresses");
 
         addressRepository.deleteById(addressId);
     }
 
     public Address updateAddress(User customer, Integer addressId, Address newAddress) {
         if (!addressRepository.existsByIdAndCustomerId(addressId, customer.getId()))
-            throw new ResourceNotFountException("Not found address with id = " + addressId + "in user's addresses");
+            throw new BusinessException("Not found address with id = " + addressId + "in user's addresses");
 
         newAddress.setId(addressId);
         newAddress.setCustomer(customer);

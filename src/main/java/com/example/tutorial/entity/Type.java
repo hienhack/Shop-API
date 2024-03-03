@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name="type")
 @Data
@@ -26,6 +28,17 @@ public class Type {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    // For removing only
+    @OneToMany(mappedBy = "type", cascade = CascadeType.REMOVE)
+    private List<StockDetail> stockDetails;
+
+    public Type(Integer id, String name, String image, Product product) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.product = product;
+    }
 
     @Override
     public boolean equals(Object other) {

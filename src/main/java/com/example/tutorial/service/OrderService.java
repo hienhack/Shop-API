@@ -5,10 +5,9 @@ import com.example.tutorial.dto.Order.OrderDTO;
 import com.example.tutorial.dto.OrderDetail.OrderDetailCreationDTO;
 import com.example.tutorial.entity.*;
 import com.example.tutorial.event.PaymentSuccessEvent;
-import com.example.tutorial.service.DeliveryService;
 import com.example.tutorial.enumeration.OrderState;
-import com.example.tutorial.exception.LogicException;
-import com.example.tutorial.exception.ResourceNotFountException;
+import com.example.tutorial.exception.BusinessException;
+import com.example.tutorial.exception.BusinessException;
 import com.example.tutorial.repository.AddressRepository;
 import com.example.tutorial.repository.OrderRepository;
 import com.example.tutorial.repository.ProductRepository;
@@ -43,10 +42,10 @@ public class OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (OrderDetailCreationDTO item : orderDTO.getOrderDetails()) {
             Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new ResourceNotFountException("Not found product with id = " + item.getProductId()));
+                    .orElseThrow(() -> new BusinessException("Not found product with id = " + item.getProductId()));
             int inStock = product.getInStock(item.getType(), item.getSize());
             if (item.getQuantity() > inStock) {
-                throw new LogicException("Not enough product(s)");
+                throw new BusinessException("Not enough product(s)");
             }
 
             weight += item.getQuantity() * product.getWeight();
@@ -57,7 +56,7 @@ public class OrderService {
         order.setProductsCost(productsCost);
 
         Address address = addressRepositoryd.findById(orderDTO.getDelivery().getAddressId())
-                .orElseThrow(() -> new ResourceNotFountException("Address not found"));
+                .orElseThrow(() -> new BusinessException("Address not found"));
         int deliveryFee = deliveryService.getFee(address.getId(), weight);
         order.setDelivery(new Delivery(address.toString(), orderDTO.getDelivery().getName(),
                 orderDTO.getDelivery().getPhone(), weight, deliveryFee));
@@ -78,7 +77,7 @@ public class OrderService {
 
     public void updateState(Integer orderId, OrderState state) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFountException("Not found order with id = " + orderId));
+                .orElseThrow(() -> new BusinessException("Not found order with id = " + orderId));
 
         order.setState(state);
     }

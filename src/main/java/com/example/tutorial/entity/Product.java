@@ -1,10 +1,13 @@
 package com.example.tutorial.entity;
 
 import com.example.tutorial.enumeration.Size;
-import com.example.tutorial.exception.ResourceNotFountException;
+import com.example.tutorial.exception.BusinessException;
+import com.example.tutorial.validatior.ProductType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class Product {
     @Column(name = "description", length = 600)
     private String description;
 
+    @ProductType
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
     private List<Type> types = new ArrayList<>();
 
@@ -41,7 +45,7 @@ public class Product {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
     private List<StockDetail> stock = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name="product_category",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
@@ -64,10 +68,10 @@ public class Product {
         Type type = Type.builder().name(typeName).build();
         ProductSize size = ProductSize.builder().size(sizeName).build();
         if (!this.types.contains(type)) {
-            throw new ResourceNotFountException("Not found type " + typeName + " in product with id = " + this.id);
+            throw new BusinessException("Not found type " + typeName + " in product with id = " + this.id);
         }
         else if (!this.sizes.contains(size)) {
-            throw new ResourceNotFountException("Not found size " + sizeName + " in product with id = " + this.id);
+            throw new BusinessException("Not found size " + sizeName + " in product with id = " + this.id);
         }
 
         int index = stock.indexOf(StockDetail.builder().type(type).size(size).build());

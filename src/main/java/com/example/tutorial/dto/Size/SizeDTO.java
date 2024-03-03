@@ -3,6 +3,8 @@ package com.example.tutorial.dto.Size;
 import com.example.tutorial.entity.ProductSize;
 import com.example.tutorial.entity.SizeDescription;
 import com.example.tutorial.enumeration.Size;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class SizeDTO {
     private Integer id;
+    @NotNull
     private Size size;
     private Map<String, String> sizeGuide = new HashMap<>();
 

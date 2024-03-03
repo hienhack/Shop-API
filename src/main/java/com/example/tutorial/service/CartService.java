@@ -2,7 +2,7 @@ package com.example.tutorial.service;
 
 import com.example.tutorial.dto.Cart.CartDTO;
 import com.example.tutorial.entity.*;
-import com.example.tutorial.exception.ResourceNotFountException;
+import com.example.tutorial.exception.BusinessException;
 import com.example.tutorial.repository.CartRepository;
 import com.example.tutorial.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class CartService {
 
     public CartDTO getCart(Integer cartId) {
         return cartRepository.findById(cartId).map(CartDTO::new)
-                .orElseThrow(() -> new ResourceNotFountException("Not found cart with id = " + cartId));
+                .orElseThrow(() -> new BusinessException("Not found cart with id = " + cartId));
     }
 
     public CartDTO create(User customer) {

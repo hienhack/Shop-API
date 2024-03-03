@@ -59,7 +59,7 @@ public class Order {
                 this.shipped = LocalDateTime.now();
                 break;
             case DELIVERING:
-                this.delivered
+                break;
         }
     }
 }

@@ -9,6 +9,7 @@ import com.example.tutorial.entity.Payment;
 import com.example.tutorial.event.PaymentSuccessEvent;
 import com.example.tutorial.repository.OrderRepository;
 import com.example.tutorial.repository.PaymentRepository;
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpEntity;
@@ -82,16 +83,17 @@ public class PaymentService {
                 eventPublisher.publishEvent(new PaymentSuccessEvent(Integer.valueOf(result.getOrderld())));
                 IPNResponse response = new IPNResponse();
                 response.setPartnerCode("");
-                response.set
+                // response.set
 
             } catch (Exception e) {
                 // Todo
-                // Refund when error happen
+                // Refund when error happens
             }
         } else {
             // Todo
             // Error handling here
         }
+        return null;
     }
 
     public void refund() {

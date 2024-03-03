@@ -12,9 +12,11 @@ import com.example.tutorial.service.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.catalina.core.ApplicationContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestComponent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,9 @@ import java.util.Map;
 class TutorialApplicationTests {
     @Autowired
     private CategroyService categroyService;
+
+    @Autowired
+    public com.example.tutorial.service.Test testService;
 
     @Autowired
     private ProductService productService;
@@ -36,9 +41,9 @@ class TutorialApplicationTests {
 
     @Test
     void creatProduct_shouldReturnProduct() throws JsonProcessingException {
-        ProductDTO producDTO = createProductDTOForTesting();
+        ProductDTO productDTO = createProductDTOForTesting();
 
-        ProductDTO result = productService.create(producDTO);
+        ProductDTO result = productService.create(productDTO);
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(result);
@@ -62,6 +67,11 @@ class TutorialApplicationTests {
         System.out.println(json);
     }
 
+    @Test
+    void componentTest() {
+        testService.displayName();
+    }
+
 
     private ProductDTO createProductDTOForTesting() {
         ProductDTO productDTO = new ProductDTO();
@@ -71,8 +81,8 @@ class TutorialApplicationTests {
         productDTO.setThumbnail("No thumbnail yet");
 
         productDTO.setImages(Arrays.asList(
-                new ProductImage("https://a/hien1.png", null),
-                new ProductImage("https://a/hien2.png", null)
+                "https://a/hien1.png",
+                "https://a/hien2.png"
         ));
 
         productDTO.setTypes(Arrays.asList(

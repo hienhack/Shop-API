@@ -1,7 +1,7 @@
 package com.example.tutorial.service;
 
 import com.example.tutorial.entity.Category;
-import com.example.tutorial.exception.ResourceNotFountException;
+import com.example.tutorial.exception.BusinessException;
 import com.example.tutorial.repository.CategoryRepository;
 import com.example.tutorial.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -47,6 +47,6 @@ public class CategroyService {
     }
 
     public RuntimeException notFoundCategoryWithIdGiven(Integer id) {
-        return new ResourceNotFountException("Not found category with id = " + id);
+        return new BusinessException("Not found category with id = " + id);
     }
 }

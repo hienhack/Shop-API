@@ -33,6 +33,10 @@ public class ProductSize {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    // For removing only
+    @OneToMany(mappedBy = "size", cascade = CascadeType.REMOVE)
+    private List<StockDetail> stockDetails;
+
     public ProductSize(Integer id, Size size, Map<String, String> sizeDescriptions, Product product) {
         this.id = id;
         this.size = size;

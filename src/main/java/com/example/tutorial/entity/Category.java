@@ -3,11 +3,12 @@ package com.example.tutorial.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "category")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,4 +16,9 @@ public class Category {
 
     @Column(name = "name", length = 50)
     private String name;
+
+    public Category(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

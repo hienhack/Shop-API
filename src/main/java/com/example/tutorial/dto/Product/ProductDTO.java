@@ -1,5 +1,6 @@
 package com.example.tutorial.dto.Product;
 
+import com.example.tutorial.dto.Category.CategoryDTO;
 import com.example.tutorial.dto.StockDetail.StockDetailDTO;
 import com.example.tutorial.dto.Size.SizeDTO;
 import com.example.tutorial.dto.Type.TypeDTO;
@@ -44,10 +45,10 @@ public class ProductDTO {
     private @Valid List<SizeDTO> sizes;
 
     @NotEmpty
-    private List<StockDetailDTO> stock;
+    private @Valid List<StockDetailDTO> stock;
 
     @NotEmpty
-    private List<Category> categories;
+    private@Valid List<CategoryDTO> categories;
 
     public ProductDTO(Product entity) {
         this.id = entity.getId();
@@ -55,7 +56,7 @@ public class ProductDTO {
         this.thumbnail = entity.getThumbnail();
         this.price = entity.getPrice();
         this.description = entity.getDescription();
-        this.categories = entity.getCategories();
+        this.categories = entity.getCategories().stream().map(CategoryDTO::new).collect(Collectors.toList());
         this.images = entity.getImages().stream().map(ProductImage::getUrl).collect(Collectors.toList());
         this.types = entity.getTypes().stream().map(TypeDTO::new).collect(Collectors.toList());
         this.sizes = entity.getSizes().stream().map(SizeDTO::new).collect(Collectors.toList());

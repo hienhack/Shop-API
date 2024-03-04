@@ -35,7 +35,6 @@ public class Product {
     @Column(name = "description", length = 600)
     private String description;
 
-    @ProductType
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
     private List<Type> types = new ArrayList<>();
 

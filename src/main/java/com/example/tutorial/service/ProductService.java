@@ -1,5 +1,6 @@
 package com.example.tutorial.service;
 
+import com.example.tutorial.dto.Category.CategoryDTO;
 import com.example.tutorial.dto.Product.ProductDTO;
 import com.example.tutorial.dto.Product.ProductInListDTO;
 import com.example.tutorial.dto.StockDetail.StockDetailDTO;
@@ -34,7 +35,7 @@ public class ProductService {
     }
 
     public Page<ProductInListDTO> getAllByCategoryName(String categoryName, Pageable pageRequest) {
-        Category category = categoryRepository.findCategoryByName(categoryName)
+        Category category = categoryRepository.findCategoryByNameIgnoreCase(categoryName)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND.value(),
                         "Can not found category with name = " + categoryName));
         return productRepository.findProductByCategoriesContains(category, pageRequest).map(ProductInListDTO::new);
@@ -130,13 +131,16 @@ public class ProductService {
         }
         product.setStock(stock);
 
-        for (Category category : productDTO.getCategories()) {
+        for (CategoryDTO category : productDTO.getCategories()) {
             if (category.getId() != null) {
                 Category existedCategory = categoryRepository.findById(category.getId())
                         .orElseThrow(() -> new BusinessException("Not found category with id = " + category.getId()));
                 product.getCategories().add(existedCategory);
             } else {
-                product.getCategories().add(category);
+                if (categoryRepository.existsByNameIgnoreCase(category.getName())) {
+                    throw new BusinessException("Category with name = " + category.getName() + " existed");
+                }
+                product.getCategories().add(new Category(category.getId(), category.getName()));
             }
         }
 

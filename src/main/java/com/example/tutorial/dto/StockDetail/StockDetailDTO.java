@@ -3,6 +3,8 @@ package com.example.tutorial.dto.StockDetail;
 import com.example.tutorial.entity.StockDetail;
 import com.example.tutorial.enumeration.Size;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +17,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StockDetailDTO {
     private Integer id;
+
+    @NotEmpty
     private String type;
+
+    @NotNull
     private Size size;
+
+    @NotNull
     private Integer inStock;
 
     public StockDetailDTO(StockDetail entity) {

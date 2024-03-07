@@ -1,40 +1,66 @@
 package com.example.tutorial.controller;
 
+import com.example.tutorial.dto.Response.ResponseDTO;
 import com.example.tutorial.dto.User.UserCreationDTO;
 import com.example.tutorial.dto.User.UserDTO;
+import com.example.tutorial.dto.User.UserUpdateDTO;
+import com.example.tutorial.entity.User;
 import com.example.tutorial.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.tutorial.util.AuthenticationHelper;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @GetMapping(value = "/{id}")
-    public UserDTO getUser(@RequestParam(name = "id") Integer id) {
-        return new UserDTO(userService.loadUserById(id));
+    /**
+     * Used for admin to get user profile
+     * @param id user id
+     * @return user information
+     */
+    @GetMapping(value = "/profile/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseDTO<UserDTO> getUser(@PathVariable(name = "id") Integer id) {
+        return ResponseDTO.of(userService.getUser(id));
+    }
+
+    /**
+     * Used for normal users to view their profile
+     * @param principal logged in user
+     * @return user information
+     */
+    @GetMapping(value = "/profile")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseDTO<UserDTO> getUser(Principal principal) {
+        User user = (User)principal;
+        return ResponseDTO.of(userService.getUser(user.getId()));
     }
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userService.getAllUsers();
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseDTO<List<UserDTO>> getAllUsers() {
+        return ResponseDTO.of(userService.getAllUsers());
     }
 
     @PostMapping
-    public UserDTO createUser(@RequestBody UserCreationDTO userCreationDTO) {
-        return userService.create(userCreationDTO);
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public ResponseDTO<UserDTO> createUser(@RequestBody @Valid UserCreationDTO userCreationDTO) {
+        return ResponseDTO.of(userService.create(userCreationDTO));
     }
 
-    @PutMapping(value = "/{userId}/addresses/{addressId}")
-    public String updateAddress(
-            @RequestParam(name = "userId") Integer userId,
-            @RequestParam(name = "addressId") Integer addressId
-    ) {
-
-        return "updated successfully";
+    @PutMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseDTO<UserDTO> updateUser(Authentication authentication, @RequestBody @Valid UserUpdateDTO userUpdateDTO) {
+        User user = AuthenticationHelper.getUser(authentication);
+        return ResponseDTO.of(userService.updateUser(user, userUpdateDTO));
     }
 }

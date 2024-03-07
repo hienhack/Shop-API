@@ -4,11 +4,10 @@ import com.example.tutorial.dto.Response.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
-import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,8 +32,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(new ErrorResponse(e.getStatusCode(), 0, e.getMessage())));
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    public ErrorResponseDTO handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return new ErrorResponseDTO(new ErrorResponse(HttpStatus.NOT_IMPLEMENTED.value(), 0, "Method not found"));
+    }
+
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {
         String message = "Internal server error";
         // Todo: log the error
@@ -44,10 +48,4 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), 0, message)));
     }
 
-    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String handle(Exception e) {
-        System.out.println(e.getMessage());
-        return "This is an exception";
-    }
 }

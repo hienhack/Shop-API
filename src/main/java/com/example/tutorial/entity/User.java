@@ -24,11 +24,11 @@ public class User implements UserDetails {
     @Column(name = "name", length = 50)
     private String name;
 
-    @Column(name = "email", length = 50)
-    private String email;
-
     @Column(name = "phone", length = 11)
     private String phone;
+
+    @Column(name = "email", length = 50)
+    private String email;
 
     @Column(name = "password", length = 100)
     private String password;

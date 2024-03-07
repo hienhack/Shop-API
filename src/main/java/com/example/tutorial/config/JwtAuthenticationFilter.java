@@ -1,6 +1,7 @@
-package com.example.tutorial.util;
+package com.example.tutorial.config;
 
 import com.example.tutorial.service.UserService;
+import com.example.tutorial.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

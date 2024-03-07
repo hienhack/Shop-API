@@ -2,13 +2,18 @@ package com.example.tutorial.service;
 
 import com.example.tutorial.dto.User.UserCreationDTO;
 import com.example.tutorial.dto.User.UserDTO;
+import com.example.tutorial.dto.User.UserUpdateDTO;
 import com.example.tutorial.entity.Address;
+import com.example.tutorial.entity.Cart;
 import com.example.tutorial.entity.User;
-import com.example.tutorial.exception.BusinessException;
+import com.example.tutorial.entity.UserRole;
 import com.example.tutorial.exception.BusinessException;
 import com.example.tutorial.repository.AddressRepository;
+import com.example.tutorial.repository.CartRepository;
 import com.example.tutorial.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,15 +23,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final AddressRepository addressRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String account) {
@@ -38,30 +40,44 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll().stream().map(UserDTO::new).toList();
     }
 
-    public User loadUserById(Integer id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDTO getUser(Integer id) {
+        User found = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NO_CONTENT.value(), "User not found"));
+
+        return new UserDTO(found);
     }
 
-    public UserDTO create(UserCreationDTO userCreationDTO) {
-        // Checking valid password: length, including special characters,...
-        // Checking valid email
-       // Checking valid phone
+    public User loadUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NO_CONTENT.value(), "User not found"));
+    }
 
-        // Checking existing email, phone
-        if (userRepository.existsByEmail(userCreationDTO.getEmail())) {
-            throw new BusinessException("Email existed, try another one");
-        } else if (userRepository.existsByPhone(userCreationDTO.getPhone())) {
+    @Transactional(rollbackOn = { Exception.class })
+    public UserDTO create(UserCreationDTO userCreationDTO) {
+        if (userRepository.existsByPhone(userCreationDTO.getPhone())) {
             throw new BusinessException("Phone existed, try another one");
         }
 
         User user = new User();
         user.setName(userCreationDTO.getName());
         user.setPhone(userCreationDTO.getPhone());
-        user.setEmail(userCreationDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userCreationDTO.getPassword()));
 
         user.getRoles().addAll(userCreationDTO.getRoles());
         user.getRoles().forEach(userRole -> userRole.setUser(user));
+        var createdUser = userRepository.save(user);
+
+        // Create customer cart
+        if (isCustomer(createdUser)) {
+            createUserCart(createdUser);
+        }
+
+        return new UserDTO(userRepository.save(user));
+    }
+
+    public UserDTO updateUser(User user, UserUpdateDTO userUpdateDTO) {
+        user.setEmail(userUpdateDTO.getEmail());
+        user.setName(userUpdateDTO.getName());
 
         return new UserDTO(userRepository.save(user));
     }
@@ -72,19 +88,35 @@ public class UserService implements UserDetailsService {
     }
 
     public void removeAddress(User customer, Integer addressId) {
-        if (!addressRepository.existsByIdAndCustomerId(addressId, customer.getId()))
+        if (!addressRepository.existsByIdAndCustomer_Id(addressId, customer.getId()))
             throw new BusinessException("Not found address with id = " + addressId + "in user's addresses");
 
         addressRepository.deleteById(addressId);
     }
 
     public Address updateAddress(User customer, Integer addressId, Address newAddress) {
-        if (!addressRepository.existsByIdAndCustomerId(addressId, customer.getId()))
+        if (!addressRepository.existsByIdAndCustomer_Id(addressId, customer.getId()))
             throw new BusinessException("Not found address with id = " + addressId + "in user's addresses");
 
         newAddress.setId(addressId);
         newAddress.setCustomer(customer);
 
         return addressRepository.save(newAddress);
+    }
+
+    private void createUserCart(User customer) {
+        var cart = new Cart();
+        cart.setCustomer(customer);
+        cartRepository.save(cart);
+    }
+
+    private boolean isCustomer(User user) {
+        for (UserRole userRole : user.getRoles()) {
+            if (userRole.getRole().name().split("_")[0].equals("USER")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

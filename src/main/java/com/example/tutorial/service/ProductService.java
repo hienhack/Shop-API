@@ -107,6 +107,7 @@ public class ProductService {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setImages(productDTO.getImages().stream().map(image -> new ProductImage(image, product)).toList());
+        product.setWeight(productDTO.getWeight());
 
         product.setTypes(productDTO.getTypes().stream().map(typeDTO ->
                 new Type(typeDTO.getId(), typeDTO.getName(), typeDTO.getImage(), product)

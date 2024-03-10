@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
 @Table(name = "orders")
-@NoArgsConstructor
 @AllArgsConstructor
 public class Order {
     @Id
@@ -23,11 +23,11 @@ public class Order {
     @Column(name = "state", length = 15)
     private OrderState state;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
@@ -52,14 +52,36 @@ public class Order {
 
     private int productsCost;
     private int totalCost;
+    private boolean isCheckedOut;
 
-    public void setState(OrderState state) {
-        switch (state) {
-            case SHIPPING:
+    public Order() {
+        this.state = OrderState.CONFIRMING;
+        this.isCheckedOut = false;
+    }
+
+    public void updateState() {
+        switch (this.state) {
+            case CONFIRMING -> {
+                this.state = OrderState.PACKING;
+                return;
+            }
+            case PACKING -> {
+                this.state = OrderState.SHIPPING;
+                return;
+            }
+            case SHIPPING -> {
+                this.state = OrderState.DELIVERING;
+                this.delivered = LocalDateTime.now();
+                return;
+            }
+            case DELIVERING -> {
+                this.state = OrderState.FINISHED;
                 this.shipped = LocalDateTime.now();
-                break;
-            case DELIVERING:
-                break;
+                return;
+            }
+            default -> {
+                return;
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.example.tutorial.config;
 
-import com.example.tutorial.util.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,6 +36,7 @@ public class SecurityConfiguration {
 //                    "/api/products"
 //            ).permitAll();
 
+            auth.requestMatchers("/api/cart/**").authenticated();
 
             auth.anyRequest().permitAll();
 

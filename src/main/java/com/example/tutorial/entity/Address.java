@@ -41,14 +41,15 @@ public class Address {
         StringBuilder builder = new StringBuilder();
         builder.append(this.address);
         builder.append(", ");
-        builder.append(this.village);
-        builder.append(", ");
+        if (village != null && !village.isBlank()) {
+            builder.append(this.village);
+            builder.append(", ");
+        }
         builder.append(this.ward);
         builder.append(", ");
         builder.append(this.district);
         builder.append(", ");
         builder.append(this.province);
-        builder.append(", ");
 
         return builder.toString();
     }

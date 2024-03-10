@@ -3,6 +3,7 @@ package com.example.tutorial.dto.Payment;
 import com.example.tutorial.entity.Payment;
 import com.example.tutorial.enumeration.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class PaymentDTO {
     private float total;
 
     @JsonProperty("payment_method")
-    private PaymentMethod method;
+    private @NotNull PaymentMethod method;
 
     public PaymentDTO(Payment entity) {
         this.id = entity.getId();

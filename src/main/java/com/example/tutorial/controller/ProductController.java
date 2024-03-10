@@ -106,4 +106,8 @@ public class ProductController {
 
         return sorts.stream().reduce(Sort.unsorted(), Sort::and);
     }
+
+    private void test(Class<Enum<?>> enumClass, String sortInfo) {
+
+    }
 }

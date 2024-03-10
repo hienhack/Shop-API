@@ -30,7 +30,7 @@ public class Product {
     private String thumbnail;
 
     private Float price;
-    private int weight;
+    private float weight;
 
     @Column(name = "description", length = 600)
     private String description;
@@ -64,6 +64,14 @@ public class Product {
     }
 
     public int getInStock(String typeName, Size sizeName) {
+        return findStockDetail(typeName, sizeName).getInStock();
+    }
+
+    public void setInStock(String typeName, Size sizeName, Integer inStock) {
+        findStockDetail(typeName, sizeName).setInStock(inStock);
+    }
+
+    private StockDetail findStockDetail(String typeName, Size sizeName) {
         Type type = Type.builder().name(typeName).build();
         ProductSize size = ProductSize.builder().size(sizeName).build();
         if (!this.types.contains(type)) {
@@ -72,8 +80,7 @@ public class Product {
         else if (!this.sizes.contains(size)) {
             throw new BusinessException("Not found size " + sizeName + " in product with id = " + this.id);
         }
-
         int index = stock.indexOf(StockDetail.builder().type(type).size(size).build());
-        return stock.get(index).getInStock();
+        return stock.get(index);
     }
 }

@@ -23,18 +23,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProductDTO {
     private Integer id;
-
-    @NotEmpty
-    private String name;
-
-    @NotEmpty
-    private String thumbnail;
-
-    @NotEmpty
-    private String description;
-
-    @NotNull
-    private Float price;
+    private @NotEmpty String name;
+    private @NotEmpty String thumbnail;
+    private @NotEmpty String description;
+    private @NotNull Float price;
+    private @NotNull Float weight;
 
     private List<String> images;
 
@@ -61,5 +54,6 @@ public class ProductDTO {
         this.types = entity.getTypes().stream().map(TypeDTO::new).collect(Collectors.toList());
         this.sizes = entity.getSizes().stream().map(SizeDTO::new).collect(Collectors.toList());
         this.stock = entity.getStock().stream().map(StockDetailDTO::new).collect(Collectors.toList());
+        this.weight = entity.getWeight();
     }
 }

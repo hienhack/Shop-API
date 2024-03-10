@@ -40,6 +40,17 @@ public class User implements UserDetails {
         this.roles = new ArrayList<>();
     }
 
+    public boolean isAdmin() {
+        List<String> roles = this.roles.stream().map(userRole -> userRole.getRole().name()).toList();
+
+        for (String role : roles) {
+            if (role.contains("ADMIN"))
+                return true;
+        }
+
+        return false;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name())).toList();

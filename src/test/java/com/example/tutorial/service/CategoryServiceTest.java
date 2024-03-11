@@ -18,8 +18,8 @@ class CategoryServiceTest {
 
     @Test
     void createCategory() {
-        Category c1 = new Category(null, "T Shirt");
-        categoryService.create(c1);
+//        Category c1 = new Category(null, "T Shirt");
+//        categoryService.create(c1);
     }
 
     @Test

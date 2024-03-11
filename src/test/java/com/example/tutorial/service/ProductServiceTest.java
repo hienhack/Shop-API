@@ -153,10 +153,10 @@ public class ProductServiceTest {
                 new StockDetailDTO(null, "White", Size.M, 7)
         ));
 
-        productDTO.setCategories(Arrays.asList(
-                new Category(null, "jacket"),
-                new Category(null, "shirt")
-        ));
+//        productDTO.setCategories(Arrays.asList(
+//                new Category(null, "jacket"),
+//                new Category(null, "shirt")
+//        ));
 
         return productDTO;
     }

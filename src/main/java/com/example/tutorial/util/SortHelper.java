@@ -1,6 +1,5 @@
 package com.example.tutorial.util;
 
-import com.example.tutorial.controller.ProductController;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;

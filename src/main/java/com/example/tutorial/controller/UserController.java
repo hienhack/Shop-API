@@ -9,12 +9,14 @@ import com.example.tutorial.service.UserService;
 import com.example.tutorial.util.AuthenticationHelper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -35,13 +37,13 @@ public class UserController {
 
     /**
      * Used for normal users to view their profile
-     * @param principal logged in user
+     * @param authentication logged in user
      * @return user information
      */
     @GetMapping(value = "/profile")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseDTO<UserDTO> getUser(Principal principal) {
-        User user = (User)principal;
+    public ResponseDTO<UserDTO> getUser(Authentication authentication) {
+        User user = AuthenticationHelper.getUser(authentication);
         return ResponseDTO.of(userService.getUser(user.getId()));
     }
 
@@ -54,6 +56,13 @@ public class UserController {
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseDTO<UserDTO> createUser(@RequestBody @Valid UserCreationDTO userCreationDTO) {
+        userCreationDTO.setRole(Set.of("USER"));
+        return ResponseDTO.of(userService.create(userCreationDTO));
+    }
+
+    @PostMapping("/admins")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public ResponseDTO<UserDTO> createAdmin(@RequestBody @Valid UserCreationDTO userCreationDTO) {
         return ResponseDTO.of(userService.create(userCreationDTO));
     }
 

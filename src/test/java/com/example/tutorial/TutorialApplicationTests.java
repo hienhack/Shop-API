@@ -5,18 +5,15 @@ import com.example.tutorial.dto.Size.SizeDTO;
 import com.example.tutorial.dto.StockDetail.StockDetailDTO;
 import com.example.tutorial.dto.Type.TypeDTO;
 import com.example.tutorial.entity.Category;
-import com.example.tutorial.entity.ProductImage;
 import com.example.tutorial.enumeration.Size;
-import com.example.tutorial.service.CategroyService;
+import com.example.tutorial.service.CategoryService;
 import com.example.tutorial.service.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.apache.catalina.core.ApplicationContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestComponent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,17 +22,14 @@ import java.util.Map;
 @SpringBootTest
 class TutorialApplicationTests {
     @Autowired
-    private CategroyService categroyService;
-
-    @Autowired
-    public com.example.tutorial.service.Test testService;
+    private CategoryService categoryService;
 
     @Autowired
     private ProductService productService;
 
     @Test
     void getAllCategory() {
-        List<Category> categories = categroyService.getAllCategories();
+        List<Category> categories = categoryService.getAllCategories();
         int a = 1 + 1;
     }
 
@@ -53,8 +47,8 @@ class TutorialApplicationTests {
 
     @Test
     void addCategory() {
-        categroyService.create(new Category(null, "jacket"));
-        categroyService.create(new Category(null, "shirt"));
+//        categoryService.create(new Category(null, "jacket"));
+//        categoryService.create(new Category(null, "shirt"));
     }
 
     @Test
@@ -66,12 +60,6 @@ class TutorialApplicationTests {
 
         System.out.println(json);
     }
-
-    @Test
-    void componentTest() {
-        testService.displayName();
-    }
-
 
     private ProductDTO createProductDTOForTesting() {
         ProductDTO productDTO = new ProductDTO();
@@ -102,10 +90,10 @@ class TutorialApplicationTests {
                 new StockDetailDTO(null, "White", Size.M, 7)
         ));
 
-        productDTO.setCategories(Arrays.asList(
-                new Category(1, "jacket"),
-                new Category(2, "shirt")
-        ));
+//        productDTO.setCategories(Arrays.asList(
+//                new Category(1, "jacket"),
+//                new Category(2, "shirt")
+//        ));
 
         return productDTO;
     }

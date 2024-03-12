@@ -2,6 +2,7 @@ package com.example.tutorial.dto.User;
 
 import com.example.tutorial.entity.UserRole;
 import com.example.tutorial.enumeration.Role;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,14 +22,14 @@ public class UserCreationDTO {
     private String phone;
 
     @NotEmpty
-    @Min(value = 8, message = "Password must have at least 8 characters")
-    private  String password;
+    @Size(min = 8, message = "Password must have at least 8 characters")
+    private String password;
 
     @Email
     private String email;
 
     @NotNull
-    private List<UserRole> roles;
+    private @Valid List<UserRole> roles;
 
     public void setRole(Set<String> roles) {
         this.roles = roles.stream().map(role ->

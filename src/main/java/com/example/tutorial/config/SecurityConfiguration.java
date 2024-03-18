@@ -57,6 +57,8 @@ public class SecurityConfiguration {
                     "/api/auth/sign-in"
             ).permitAll();
 
+            auth.requestMatchers("/api/images/**").permitAll();
+
             auth.anyRequest().authenticated();
         });
 
